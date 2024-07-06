@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { IoBook, IoBookmark, IoBookmarkOutline, IoBookOutline } from "react-icons/io5";
 import { FaInfo, FaInfoCircle } from "react-icons/fa";
-import SurahMenu from "@/components/surahMenu";
+import SurahMenu from "@/components/SurahMenu";
 import Image from "next/image";
 
 const inter = Inter({ subsets: ["latin"] });

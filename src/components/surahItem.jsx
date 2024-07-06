@@ -1,5 +1,6 @@
+"use client";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CiPlay1 } from "react-icons/ci";
 import { IoBookmarkOutline, IoBookOutline } from "react-icons/io5";
 import { MdMenuBook } from "react-icons/md";
@@ -18,8 +19,23 @@ async function fetchData() {
   return res.json();
 }
 
-export default async function surahItem() {
-  const dataSurahItem = await fetchData();
+export default function SurahItem() {
+  const [dataSurahItem, setDataSurahItem] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchData()
+      .then((data) => setDataSurahItem(data))
+      .catch((error) => setError(error.message));
+  }, []);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!dataSurahItem) {
+    return <div>Loading...</div>;
+  }
   return (
     <div>
       {/* title surah */}
