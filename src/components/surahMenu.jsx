@@ -11,7 +11,7 @@ async function fetchData() {
   return res.json();
 }
 
-export default async function surahMenu() {
+export default async function SurahMenu() {
   const dataSurah = await fetchData();
 
   return (
