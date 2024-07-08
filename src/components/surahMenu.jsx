@@ -1,5 +1,9 @@
+"use client";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Skeleton from "./ui/Skeleton";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 async function fetchData() {
   const res = await fetch("https:equran.id/api/v2/surat");
@@ -11,8 +15,32 @@ async function fetchData() {
   return res.json();
 }
 
-export default async function SurahMenu() {
-  const dataSurah = await fetchData();
+export default function SurahMenu() {
+  const [activeItem, setActiveItem] = useState(1);
+  const [dataSurah, setDataSurah] = useState(null);
+  const [error, setError] = useState(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    fetchData()
+      .then((data) => setDataSurah(data))
+      .catch((error) => setError(error.message));
+  }, []);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!dataSurah) {
+    return <Skeleton />;
+  }
+
+  const HandleActiveItem = (nomor) => {
+    Cookies.set("activeItem", nomor);
+    setActiveItem(nomor);
+    router.push(`/${nomor}`);
+  };
 
   return (
     <div>
@@ -27,8 +55,9 @@ export default async function SurahMenu() {
         <div className="rounded-md pt-5 mt-10 overflow-y-scroll w-full flex flex-col items-center">
           {dataSurah.data.map((surah) => (
             <div
+              onClick={() => HandleActiveItem(surah.nomor)}
               key={surah.nomor}
-              className={surah.nomor === 1 ? " bg-[white] cursor-pointer shadow-md p-5 rounded-lg w-[270px] flex  gap-3 border border-[#00957D] mb-4" : "bg-[white] cursor-pointer p-5 rounded-lg w-[270px] flex gap-3  mb-4"}
+              className={surah.nomor === activeItem ? " bg-[white] cursor-pointer shadow-md p-5 rounded-lg w-[270px] flex  gap-3 border border-[#00957D] mb-4" : "bg-[white] cursor-pointer p-5 rounded-lg w-[270px] flex gap-3  mb-4"}
             >
               <div className=" relative w-[30px] h-[33px] flex items-center justify-center">
                 <Image className="absolute left-0 top-0" src="/img/ic-frame-number.svg" alt="Logo" width={30} height={30}></Image>

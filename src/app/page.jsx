@@ -1,8 +1,8 @@
-import SurahItem from "@/components/SurahItem";
+import SurahPage from "./[slug]/page";
 export default function Home() {
   return (
     <div>
-      <SurahItem />
+      <SurahPage />
     </div>
   );
 }

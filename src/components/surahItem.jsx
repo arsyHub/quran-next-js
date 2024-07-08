@@ -2,31 +2,32 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { CiPlay1 } from "react-icons/ci";
-import { IoBookmarkOutline, IoBookOutline } from "react-icons/io5";
+import { IoBookmarkOutline } from "react-icons/io5";
 import { MdMenuBook } from "react-icons/md";
 import { GrFormNextLink } from "react-icons/gr";
-import { RiHome6Line } from "react-icons/ri";
 import { LiaQuranSolid } from "react-icons/lia";
 import { PiMosqueLight } from "react-icons/pi";
+import Skeleton from "./ui/Skeleton";
 
-async function fetchData() {
-  const res = await fetch("https:equran.id/api/v2/surat/1");
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
-}
-
-export default function SurahItem() {
+export default function SurahItem({ surahNumber }) {
   const [dataSurahItem, setDataSurahItem] = useState(null);
   const [error, setError] = useState(null);
+
+  async function fetchData() {
+    const res = await fetch(`https:equran.id/api/v2/surat/${surahNumber}`);
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    return res.json();
+  }
 
   useEffect(() => {
     fetchData()
       .then((data) => setDataSurahItem(data))
       .catch((error) => setError(error.message));
+    //eslint-disable-next-line
   }, []);
 
   if (error) {
@@ -34,7 +35,7 @@ export default function SurahItem() {
   }
 
   if (!dataSurahItem) {
-    return <div>Loading...</div>;
+    return <Skeleton />;
   }
   return (
     <div>
@@ -57,12 +58,10 @@ export default function SurahItem() {
       <div className="overflow-y-scroll h-[66vh] pb-16">
         {dataSurahItem?.data?.ayat?.map((ayat) => (
           <div key={ayat.nomorAyat} className="mt-5 w-ful mx-5 bg-white p-5 rounded-md">
-            {/* <div className="flex md:justify-between"> */}
             <div className="border border-[#EA9600] h-[25px] w-[25px] sm:h-[30px] sm:w-[30px] rounded-full flex justify-center items-center font-bold  text-[#EA9600]">
               <h1 className="text-xs sm:text-sm">{ayat.nomorAyat}</h1>
             </div>
             <p className="text-[#00957D] text-2xl sm:text-3xl text-right">{ayat.teksArab}</p>
-            {/* </div> */}
 
             <div className="mt-10">
               <p className="text-[#00957D] font-bold text-sm">{ayat.teksLatin}</p>
@@ -94,7 +93,7 @@ export default function SurahItem() {
       </div>
 
       {/* desktop show */}
-      <div className="hidden join sm:grid grid-cols-2 sticky bottom-0 w-[200px] float-end">
+      <div className="hidden mt-2 join sm:grid grid-cols-2 sticky bottom-0 w-[200px] float-end">
         <button className="join-item btn text-[#00957ca5]">sebelumnya</button>
         <button className="join-item btn text-[#00957D]">
           <div className="flex items-center ">
