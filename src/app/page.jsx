@@ -1,4 +1,4 @@
-import SurahItem from "@/components/SurahItem";
+import SurahItem from "@/components/surahItem";
 export default function Home() {
   return (
     <div>

@@ -19,7 +19,7 @@ async function fetchData() {
   return res.json();
 }
 
-export default function SurahItem() {
+export default function surahItem() {
   const [dataSurahItem, setDataSurahItem] = useState(null);
   const [error, setError] = useState(null);
 
