@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import Skeleton from "./ui/Skeleton";
+import React from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
@@ -16,24 +15,29 @@ async function fetchData() {
 }
 
 export default function SurahMenu() {
-  const [activeItem, setActiveItem] = useState(1);
-  const [dataSurah, setDataSurah] = useState(null);
-  const [error, setError] = useState(null);
+  const [activeItem, setActiveItem] = React.useState();
+  const [dataSurah, setDataSurah] = React.useState(null);
+  const [originalDataSurah, setOriginalDataSurah] = React.useState(null);
+  const [error, setError] = React.useState(null);
 
   const router = useRouter();
 
-  useEffect(() => {
+  React.useEffect(() => {
+    const active = Cookies.get("activeItem") || 1;
+    setActiveItem(+active);
+  }, [activeItem]);
+
+  React.useEffect(() => {
     fetchData()
-      .then((data) => setDataSurah(data))
+      .then((data) => {
+        setDataSurah(data.data);
+        setOriginalDataSurah(data.data);
+      })
       .catch((error) => setError(error.message));
   }, []);
 
   if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!dataSurah) {
-    return <Skeleton />;
+    return <div className="hidden md:block w-[300px]">Error: {error}</div>;
   }
 
   const HandleActiveItem = (nomor) => {
@@ -42,18 +46,28 @@ export default function SurahMenu() {
     router.push(`/${nomor}`);
   };
 
+  const searchSurah = (event) => {
+    const keyword = event.target.value;
+    if (keyword !== "") {
+      const filteredSurah = originalDataSurah?.filter((surah) => surah.namaLatin.toLowerCase().includes(keyword.toLowerCase()));
+      setDataSurah(filteredSurah);
+    } else {
+      setDataSurah(originalDataSurah);
+    }
+  };
+
   return (
     <div>
       <div className="bg-[#f7f7f7] w-[300px] h-[90vh] hidden md:flex flex-col items-center pt-3 ">
         <label className="w-[280px] py-3 input input-bordered flex items-center gap-2">
-          <input type="text" className="grow text-sm" placeholder="Cari nama surah" />
+          <input onChange={searchSurah} type="text" className="grow text-sm" placeholder="Cari nama surah" />
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-7 w-7 opacity-70 text-[#00957D]">
             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
           </svg>
         </label>
 
         <div className="rounded-md pt-5 mt-10 overflow-y-scroll w-full flex flex-col items-center">
-          {dataSurah.data.map((surah) => (
+          {dataSurah?.map((surah) => (
             <div
               onClick={() => HandleActiveItem(surah.nomor)}
               key={surah.nomor}
